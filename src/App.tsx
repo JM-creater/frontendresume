@@ -1,24 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useContext, lazy, Suspense } from "react";
+import { ThemeContext } from "./context/theme.context";
+import Navbar from "./components/navbar/navbar.component";
+import { Routes, Route } from "react-router-dom";
+import CustomLinearProgress from "./components/custom-linear-progress/CustomLinearProgress.component";
+
+// import with lazy loading
+const Home = lazy(() => import("./pages/home/Home.page"));
+const Companies = lazy(() => import("./pages/home/companies/Companies.page"));
+const AddCompany = lazy(() => import("./pages/home/companies/AddCompany.page"));
+const Jobs = lazy(() => import("./pages/jobs/Jobs.page"));
+const AddJob = lazy(() => import("./pages/jobs/AddJob.page"))
+const Candidates = lazy(() => import("./pages/candidates/Candidates.page"));
+const AddCandidate = lazy(() => import("./pages/candidates/AddCandidate.page"));
 
 function App() {
+  const { darkMode } = useContext(ThemeContext);
+
+  const appStyles = darkMode ? "app dark" : "app";
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={appStyles}>
+      <Navbar />
+      <div className="wrapper">
+        <Suspense fallback={<CustomLinearProgress />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/companies">
+              <Route index element={<Companies />} />
+              <Route path="add" element={<AddCompany />} />
+            </Route>
+            <Route path="/jobs">
+              <Route index element={<Jobs />} />
+              <Route path="add" element={<AddJob />} />
+            </Route>
+            <Route path="/candidates">
+              <Route index element={<Candidates />} />
+              <Route path="add" element={<AddCandidate />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </div>
     </div>
   );
 }
